@@ -89,7 +89,7 @@ pkgs['ffmpeg-git'] = x['ffmpeg']
 pkgs['libmpv-git'] = x['mpv']
 pkgs['mpv-git'] = x['mpv']
 
-for t in ['build-all.yml', 'libplacebo.yml', 'ffmpeg.yml', 'shaderc', 'vulkan', 'mpv.yml']:
+for t in ['build-all.yml', 'ffmpeg.yml', 'mpv.yml', 'libplacebo.yml', 'shaderc.yml', 'vulkan.yml']:
   with in_place.InPlace('.github/workflows/%s' % t, newline='') as f:
     for l in f:
       if (i:=l.find('/dev-${{ inputs.toolchain }}/')) > -1:
