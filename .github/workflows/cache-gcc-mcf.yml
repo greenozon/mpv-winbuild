@@ -1,4 +1,4 @@
-name: cache-gcc-mcf
+name: Cache GCC With MCF Thread Toolchain
 defaults:
   run:
     shell: bash

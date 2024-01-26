@@ -1,129 +1,118 @@
-name: mpv
+name: Build mpv
 defaults:
   run:
     shell: bash
 on:
   workflow_dispatch:
+    inputs:
+      toolchain:
+        required: false
+        default: "gcc-mcf"
+        type: choice
+        options:
+        - gcc-mcf
+        - llvm-clang
 
   #schedule:
   #- cron: '30 0 * * MON'
     
 jobs:
   mpv:
+    needs: [libcaca, libjpeg, libpng, libsdl2, libsixel, ffmpeg, luajit2, libass, lcms2, libbluray, libudfread, libdvdnav, libplacebo, angle, mujs, rubberband, spirv-cross, vulkan]
     runs-on: ubuntu-latest
     container:
       image: docker://ghcr.io/eko5624/archlinux:latest
-    steps:    
-      - name: Setup git config
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global pull.rebase true
-          git config --global rebase.autoStash true
-          git config --global fetch.prune true
-          git config --global --add safe.directory $PWD
-      - name: Add builder user
-        run: |
-          useradd builder -m
-          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    steps:
       - name: Setting top_dir env
-        run: |
-          echo "top_dir=$(cd ~ && pwd)" >> $GITHUB_ENV         
+        run: echo "top_dir=$(cd ~ && pwd)" >> $GITHUB_ENV         
       - name: Checkout
         uses: actions/checkout@main
-      - name: Setting makepkg etc
-        run: |
-          sudo cp pacman-config/makepkg_cross.conf /etc
-          sudo cp pacman-config/makepkg-cross /usr/local/bin
-      - name: Loading cross gcc cache
+        with:
+          ref: ${{ inputs.toolchain }}
+      - name: Loading ${{ inputs.toolchain }} cache
         uses: actions/cache/restore@main
         with:
           path: ${{ env.top_dir }}/cross
-          key: cross-gcc-mcf-${{ github.run_id }}
-          restore-keys: |
-            cross-gcc-mcf-          
+          key: ${{ inputs.toolchain }}-${{ github.run_id }}
+          restore-keys: ${{ inputs.toolchain }}-
       - name: Build
         run: |
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/amf-headers-dev-1.4.32-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/angle-headers-dev-1.0.772-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/aom-dev-3.8.0-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/avisynth-dev-3.7.3-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/brotli-dev-1.1.0-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/dav1d-dev-1.3.0-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/davs2-dev-1.7-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/ffmpeg-dev-6.1.1-1-x86_64.pkg.tar.zst        
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/ffnvcodec-dev-12.1.14.0-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/freetype2-dev-2_13_2-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/fribidi-dev-1.0.13-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/highway-dev-1.0.7-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/harfbuzz-dev-8.3.0-1-x86_64.pkg.tar.zst      
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/lame-dev-3.100-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/lcms2-dev-2.16-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libaribcaption-dev-1.1.1-1-x86_64.pkg.tar.zst        
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libass-dev-0.17.1-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libbluray-dev-1.3.4-1-x86_64.pkg.tar.zst                        
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libbs2b-dev-3.1.0-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libcaca-dev-0.99.beta20-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libdovi-dev-3.2.0-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libdvdcss-dev-1.4.3-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libdvdnav-dev-6.1.1-1-x86_64.pkg.tar.zst        
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libdvdread-dev-6.1.3-1-x86_64.pkg.tar.zst        
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libiconv-dev-1.17-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libjpeg-dev-3.0.1-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libjxl-dev-0.9.1-1-x86_64.pkg.tar.zst                
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libmodplug-dev-0.8.9.0-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libmysofa-dev-1.3.2-1-x86_64.pkg.tar.zst               
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libogg-dev-1.3.5-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libopenmpt-dev-0.7.3-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libplacebo-dev-6.338.1-1-x86_64.pkg.tar.zst        
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libpng-dev-1.6.40-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libsdl2-dev-2.28.5-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libsixel-dev-1.10.3-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libsoxr-dev-0.1.3-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libspeex-dev-1.2.1-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libsrt-dev-1.5.3-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libssh-dev-0.10.6-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libudfread-dev-1.1.2-1-x86_64.pkg.tar.zst         
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libunibreak-dev-5_1-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libva-dev-2.20.0-1-x86_64.pkg.tar.zst               
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libvorbis_aotuv-dev-1.3.7-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libvpl-dev-2023.4.0-1-x86_64.pkg.tar.zst        
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libvpx-dev-1.12.0-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libwebp-dev-1.3.2-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libxml2-dev-2.12.3-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libxvid-dev-1.3.7-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libzimg-dev-3.0.5-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/libzvbi-dev-0.2.42-1-x86_64.pkg.tar.zst        
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/luajit2-dev-2.1_20231117-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/mujs-dev-1.3.4-1-x86_64.pkg.tar.zst                
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/openal-soft-dev-1.23.1-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/openssl-dev-3.2.0-1-x86_64.pkg.tar.zst      
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/opus-dev-1.4-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/rav1e-dev-0.7.1-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/rubberband-dev-3.3.0-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/shaderc-dev-2023.8-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/spirv-cross-dev-1.3.261.1-1-x86_64.pkg.tar.zst                
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/uavs3d-dev-1.1-1-x86_64.pkg.tar.zst        
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/vapoursynth-dev-65-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/vulkan-dev-1.3.268.0-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/xxhash-dev-0.8.2-1-x86_64.pkg.tar.zst
-          curl -OL https://github.com/${{ github.repository }}/releases/download/dev/zlib-dev-2.1.6-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/amf-headers-dev-1.4.32-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/angle-headers-dev-1.0.772-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/aom-dev-3.8.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/avisynth-dev-3.7.3-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/brotli-dev-1.1.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/dav1d-dev-1.3.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/davs2-dev-1.7-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/ffmpeg-dev-6.1.1-1-x86_64.pkg.tar.zst        
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/ffnvcodec-dev-12.1.14.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/freetype2-dev-2_13_2-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/fribidi-dev-1.0.13-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/highway-dev-1.0.7-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/harfbuzz-dev-8.3.0-1-x86_64.pkg.tar.zst      
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/lame-dev-3.100-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/lcms2-dev-2.16-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libaribcaption-dev-1.1.1-1-x86_64.pkg.tar.zst        
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libass-dev-0.17.1-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libbluray-dev-1.3.4-1-x86_64.pkg.tar.zst                        
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libbs2b-dev-3.1.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libcaca-dev-0.99.beta20-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libdovi-dev-3.2.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libdvdcss-dev-1.4.3-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libdvdnav-dev-6.1.1-1-x86_64.pkg.tar.zst        
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libdvdread-dev-6.1.3-1-x86_64.pkg.tar.zst        
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libiconv-dev-1.17-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libjpeg-dev-3.0.1-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libjxl-dev-0.9.1-1-x86_64.pkg.tar.zst                
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libmodplug-dev-0.8.9.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libmysofa-dev-1.3.2-1-x86_64.pkg.tar.zst               
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libogg-dev-1.3.5-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libopenmpt-dev-0.7.3-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libplacebo-dev-6.338.1-1-x86_64.pkg.tar.zst        
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libpng-dev-1.6.40-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libsdl2-dev-2.28.5-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libsixel-dev-1.10.3-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libsoxr-dev-0.1.3-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libspeex-dev-1.2.1-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libsrt-dev-1.5.3-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libssh-dev-0.10.6-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libudfread-dev-1.1.2-1-x86_64.pkg.tar.zst         
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libunibreak-dev-5_1-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libva-dev-2.20.0-1-x86_64.pkg.tar.zst               
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libvorbis_aotuv-dev-1.3.7-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libvpl-dev-2023.4.0-1-x86_64.pkg.tar.zst        
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libvpx-dev-1.12.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libwebp-dev-1.3.2-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libxml2-dev-2.12.3-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libxvid-dev-1.3.7-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libzimg-dev-3.0.5-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/libzvbi-dev-0.2.42-1-x86_64.pkg.tar.zst        
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/luajit2-dev-2.1_20231117-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/mujs-dev-1.3.4-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/openal-soft-dev-1.23.1-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/openssl-dev-3.2.0-1-x86_64.pkg.tar.zst      
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/opus-dev-1.4-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/rav1e-dev-0.7.1-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/rubberband-dev-3.3.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/shaderc-dev-2023.8-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/spirv-cross-dev-1.3.261.1-1-x86_64.pkg.tar.zst                
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/uavs3d-dev-1.1-1-x86_64.pkg.tar.zst        
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/vapoursynth-dev-65-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/vulkan-dev-1.3.268.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/xxhash-dev-0.8.2-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-${{ inputs.toolchain }}/zlib-dev-2.1.6-1-x86_64.pkg.tar.zst
           pacman -U *.zst --noconfirm
-          sudo chmod 777 -R ${{ env.top_dir }}
-          sudo chmod 777 -R .
-          cd mpv
-          sudo -H -u builder makepkg-cross -sC --noconfirm
+          sudo chmod 777 -R ${{ env.top_dir }} /home/builder .
+          cd mpv; sudo -H -u builder makepkg-cross -sLf
       - name: Delete old libmpv
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ github.token }}    
-        run: |
-          ./release-latest.sh libmpv-git
+          GH_TOKEN: ${{ secrets.BOT }}    
+        run: ./release-latest.sh libmpv-git
       - name: Release mpv and libmpv
         env:
-          GH_TOKEN: ${{ github.token }}    
-        run: |
-          ./release-latest.sh mpv-git mpv
+          GH_TOKEN: ${{ secrets.BOT }}    
+        run: ./release-latest.sh mpv-git mpv
 
   package:
     needs: [mpv]

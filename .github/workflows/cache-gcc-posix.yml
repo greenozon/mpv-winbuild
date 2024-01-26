@@ -1,4 +1,4 @@
-name: cache-gcc-posix
+name: Cache GCC With POSIX Thread Toolchain
 defaults:
   run:
     shell: bash

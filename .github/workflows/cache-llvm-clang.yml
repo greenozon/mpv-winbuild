@@ -1,4 +1,4 @@
-name: cache-llvm-clang
+name: Cache LLVM_CLANG Toolchain
 defaults:
   run:
     shell: bash
