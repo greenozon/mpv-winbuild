@@ -41,9 +41,9 @@ jobs:
         uses: actions/cache/restore@main
         with:
           path: ${{ env.top_dir }}/rust
-          key: rust-${{ github.run_id }}
+          key: rust-llvm-clang-${{ github.run_id }}
           restore-keys: |
-            rust-
+            rust-llvm-clang-
 
       - name: Setup llvm-clang Toolchain
         if: ${{ inputs.toolchain =='llvm-archlinux' }}
@@ -90,7 +90,7 @@ jobs:
         run: |
           cd ${{ env.top_dir }}
           if [[ ! -d "rust" ]]; then
-            curl -OL https://github.com/eko5624/toolchain/releases/download/toolchain/rustup-2024-01-25.7z
+            curl -OL https://github.com/eko5624/toolchain/releases/download/toolchain/rustup-llvm-clang-20240126.7z
             7z x rustup*.7z
             rm rustup*.7z
           fi 
@@ -107,4 +107,4 @@ jobs:
         if: always()
         with:
           path: ${{ env.top_dir }}/rust
-          key: rust-${{ github.run_id }}
+          key: rust-llvm-clang-${{ github.run_id }}

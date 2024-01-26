@@ -32,15 +32,15 @@ jobs:
         uses: actions/cache/restore@main
         with:
           path: ${{ env.top_dir }}/rust
-          key: rust-${{ github.run_id }}
+          key: rust-gcc-mcf-${{ github.run_id }}
           restore-keys: |
-            rust-
+            rust-gcc-mcf-
             
       - name: Setup GCC With MCF Toolchain
         run: |
           cd ${{ env.top_dir }}
           if [[ ! -d "cross/bin" ]]; then
-            curl -OL https://github.com/eko5624/toolchain/releases/download/toolchain/cross-gcc-mcf-2023-12-05-x64-ucrt.7z
+            curl -OL https://github.com/eko5624/toolchain/releases/download/toolchain/cross-gcc-mcf-2024-01-25-x64-ucrt.7z
             7z x cross-gcc-mcf*.7z
             rm cross-gcc-mcf*.7z
           fi
@@ -49,7 +49,7 @@ jobs:
         run: |
           cd ${{ env.top_dir }}
           if [[ ! -d "rust" ]]; then
-            curl -OL https://github.com/eko5624/toolchain/releases/download/toolchain/rustup-2024-01-25.7z
+            curl -OL https://github.com/eko5624/toolchain/releases/download/toolchain/rustup-gcc-mcf-20240126.7z
             7z x rustup*.7z
             rm rustup*.7z
           fi
@@ -66,4 +66,4 @@ jobs:
         if: always()
         with:
           path: ${{ env.top_dir }}/rust
-          key: rust-${{ github.run_id }}
+          key: rust-gcc-mcf-${{ github.run_id }}

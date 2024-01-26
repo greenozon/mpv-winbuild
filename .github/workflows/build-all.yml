@@ -668,12 +668,12 @@ jobs:
           path: ${{ env.top_dir }}/cross
           key: ${{ inputs.toolchain }}-${{ github.run_id }}
           restore-keys: ${{ inputs.toolchain }}-
-      - name: Loading rust cache
+      - name: Loading rust-${{ inputs.toolchain }} cache
         uses: actions/cache/restore@main
         with:
           path: ${{ env.top_dir }}/rust
-          key: rust-${{ github.run_id }}
-          restore-keys: rust-
+          key: rust-${{ inputs.toolchain }}-${{ github.run_id }}
+          restore-keys: rust-${{ inputs.toolchain }}-
       - name: Build
         run: |
           sudo chmod 777 -R ${{ env.top_dir }} /home/builder .
@@ -1790,12 +1790,12 @@ jobs:
           path: ${{ env.top_dir }}/cross
           key: ${{ inputs.toolchain }}-${{ github.run_id }}
           restore-keys: ${{ inputs.toolchain }}-
-      - name: Loading rust cache
+      - name: Loading rust-${{ inputs.toolchain }} cache
         uses: actions/cache/restore@main
         with:
           path: ${{ env.top_dir }}/rust
-          key: rust-${{ github.run_id }}
-          restore-keys: rust-
+          key: rust-${{ inputs.toolchain }}-${{ github.run_id }}
+          restore-keys: rust-${{ inputs.toolchain }}-
       - name: Build
         run: |
           sudo chmod 777 -R ${{ env.top_dir }} /home/builder .
