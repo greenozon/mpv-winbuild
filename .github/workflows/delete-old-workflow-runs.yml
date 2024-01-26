@@ -9,26 +9,26 @@ on:
         description: 'Input retained days'
         required: true
         default: '30'
-    minimum_runs:
-      description: 'Minimum runs to keep for each workflow'
-      required: true
-      default: '6'
-    workflow_pattern:
-      description: 'Name or filename of the workflow (if not set, all workflows are targeted)'
-      required: false
-    by_conclusion:
-      description: 'Remove runs based on conclusion: action_required, cancelled, failure, skipped, success'
-      required: true
-      default: "ALL"
-      type: choice
-      options:
-        - "ALL"
-        - "Unsuccessful: action_required,cancelled,failure,skipped"
-        - action_required
-        - cancelled
-        - failure
-        - skipped
-        - success
+      minimum_runs:
+        description: 'Minimum runs to keep for each workflow'
+        required: true
+        default: '6'
+      workflow_pattern:
+        description: 'Name or filename of the workflow (if not set, all workflows are targeted)'
+        required: false
+      by_conclusion:
+        description: 'Remove runs based on conclusion: action_required, cancelled, failure, skipped, success'
+        required: true
+        default: "ALL"
+        type: choice
+        options:
+          - "ALL"
+          - "Unsuccessful: action_required,cancelled,failure,skipped"
+          - action_required
+          - cancelled
+          - failure
+          - skipped
+          - success
 
 jobs:
   del_runs:
