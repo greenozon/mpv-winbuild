@@ -89,21 +89,21 @@ pkgs['ffmpeg-git'] = x['ffmpeg']
 pkgs['libmpv-git'] = x['mpv']
 pkgs['mpv-git'] = x['mpv']
 
-for t in ['build-all.yml', 'libplacebo.yml', 'ffmpeg.yml', 'mpv.yml']:
+for t in ['build-all.yml', 'libplacebo.yml', 'ffmpeg.yml', 'shaderc', 'vulkan', 'mpv.yml']:
   with in_place.InPlace('.github/workflows/%s' % t, newline='') as f:
     for l in f:
-      if (i:=l.find('/dev/')) > -1:
+      if (i:=l.find('/dev-${{ inputs.toolchain }}/')) > -1:
         r = l.find('-1-x86_64')
         rr = l.rfind('-', i, r)
-        p = l[i+5:rr]
+        p = l[i+29:rr]
         if p in pkgs:
-          l = '%s%s-%s%s' % (l[:i+5], p, pkgs[p], l[r:])
-      elif (i:=l.find('/latest/')) > -1:
+          l = '%s%s-%s%s' % (l[:i+29], p, pkgs[p], l[r:])
+      elif (i:=l.find('/latest-${{ inputs.toolchain }}/')) > -1:
         r = l.find('-1-x86_64')
         rr = l.rfind('-', i, r)
-        p = l[i+8:rr]
+        p = l[i+32:rr]
         if p in pkgs:
-          l = '%s%s-%s%s' % (l[:i+8], p, pkgs[p], l[r:])
+          l = '%s%s-%s%s' % (l[:i+32], p, pkgs[p], l[r:])
       elif (i:=l.find('/yt-dlp/releases/download/')) > -1:
         l = '%s%s/yt-dlp.exe\n' % (l[:i+26], x['yt-dlp'])                 
       f.write(l)      
