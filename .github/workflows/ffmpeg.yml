@@ -99,3 +99,4 @@ jobs:
         run: |
           ./release-latest.sh ffmpeg-git ffmpeg
           ./release-dev.sh ffmpeg-dev ffmpeg
+          ./release-dev.sh ffmpeg-thinlto ffmpeg
