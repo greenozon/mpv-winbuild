@@ -108,7 +108,9 @@ jobs:
           curl -OL https://github.com/${{ github.repository }}/releases/download/dev-llvm-clang-$BIT/vulkan-dev-1.3.275.0-1-x86_64.pkg.tar.zst
           curl -OL https://github.com/${{ github.repository }}/releases/download/dev-llvm-clang-$BIT/xxhash-dev-0.8.2-1-x86_64.pkg.tar.zst
           curl -OL https://github.com/${{ github.repository }}/releases/download/dev-llvm-clang-$BIT/zlib-dev-2.1.6-1-x86_64.pkg.tar.zst
+          curl -OL -f https://github.com/${{ github.repository }}/releases/download/dev-llvm-clang-$BIT/mpv-thinlto-0.37.0-1-x86_64.pkg.tar.xz || true
           pacman -U *.zst --noconfirm
+          mkdir -p ${{ env.top_dir }}/ccache && cp ccache.conf ${{ env.top_dir }}/ccache
           sudo chmod 777 -R ${{ env.top_dir }} .
           cd mpv; sudo -H -u builder makepkg-cross -sLf
       - name: Delete old libmpv
@@ -119,7 +121,9 @@ jobs:
       - name: Release mpv and libmpv
         env:
           GH_TOKEN: ${{ secrets.BOT }}    
-        run: ./release-latest.sh mpv-git mpv
+        run: |
+          ./release-latest.sh mpv-git mpv
+          ./release-dev.sh mpv-thinlto mpv || true
 
   package:
     needs: [mpv]
