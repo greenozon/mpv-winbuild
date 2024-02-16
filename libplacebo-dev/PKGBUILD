@@ -23,6 +23,9 @@ build() {
     --cross-file=../../../cross.meson \
     --buildtype=release \
     --default-library=static \
+    -Ddebug=true \
+    -Db_ndebug=true \
+    -Doptimization=3 \
     -Ddemos=false \
     -Dvulkan-registry="${MINGW_PREFIX}/share/vulkan/registry/vk.xml"
   meson compile -C build
