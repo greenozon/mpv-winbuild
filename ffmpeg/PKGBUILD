@@ -84,7 +84,7 @@ package_ffmpeg-dev() {
     --enable-libmysofa \
     --enable-libopenmpt \
     --enable-libopus \
-    --disable-libplacebo \
+    --enable-libplacebo \
     --enable-librav1e \
     --enable-libshaderc \
     --enable-libsoxr \
