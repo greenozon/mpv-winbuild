@@ -68,6 +68,7 @@ jobs:
           if [[ ! -d "cross/bin" ]]; then
             curl -OL https://github.com/eko5624/toolchain/releases/download/toolchain/llvm-clang-latest-ucrt-x86_64.7z
             7z x llvm*.7z
+            rm -rf cross/profiles
             rm llvm*.7z
           fi
 
