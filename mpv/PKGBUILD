@@ -44,7 +44,6 @@ build() {
     -Dlua=enabled \
     -Djavascript=enabled \
     -Dsdl2=enabled \
-    -Dlibarchive=enabled \
     -Dlibbluray=enabled \
     -Ddvdnav=enabled \
     -Drubberband=enabled \
