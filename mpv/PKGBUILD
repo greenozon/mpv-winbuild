@@ -34,7 +34,7 @@ md5sums=('SKIP')
 build() {
   LDFLAGS+=" -static"
   cd $srcdir/mpv
-  sed -i "s/0x0A00/0x0601/g" meson.build
+  sed -i "s/0x0A00/0x0602/g" meson.build
   NO_CONFLTO=1 meson setup build \
     --prefix="${MINGW_PREFIX}" \
     --libdir=${MINGW_PREFIX}/lib \
