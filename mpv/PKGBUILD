@@ -35,7 +35,7 @@ build() {
   LDFLAGS+=" -static"
   cd $srcdir/mpv
   #git reset --hard b68c742b27
-  #sed -i "s/0x0A00/0x0602/g" meson.build
+  sed -i "s/0x0A00/0x0602/g" meson.build
   NO_CONFLTO=1 meson setup build \
     --prefix="${MINGW_PREFIX}" \
     --libdir=${MINGW_PREFIX}/lib \
