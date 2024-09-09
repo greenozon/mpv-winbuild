@@ -1,11 +1,11 @@
 pkgname=vapoursynth-dev
-pkgver=66
+pkgver=69
 pkgrel=1
 pkgdesc='A video processing framework with the future in mind'
 arch=('x86_64')
 url="http://www.vapoursynth.com/"
 license=('LGPL')
-source=("https://github.com/vapoursynth/vapoursynth/releases/download/R$pkgver/VapourSynth64-Portable-R$pkgver.zip")
+source=("https://github.com/vapoursynth/vapoursynth/releases/download/R66/VapourSynth64-Portable-R66.zip")
 md5sums=('SKIP')
 
 package() {
