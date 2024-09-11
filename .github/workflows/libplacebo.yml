@@ -47,9 +47,11 @@ jobs:
         with:
           path: ${{ env.top_dir }}/cross
           key: ${{ inputs.compiler }}-${{ inputs.build_target }}-ucrt
-      - name: Loading rust cache
-        uses: actions/cache@main
-        with:
+      - name: Setup rust toolchain
+        run: |
+          curl -OL https://github.com/eko5624/toolchain/releases/download/toolchain/rust-for-win7-1.77.2.7z
+          7z x rust-for-win7-1.77.2.7z
+          rm rust-for-win7-1.77.2.7z
           path: ${{ env.top_dir }}/rust
           key: rust
       - name: Build
