@@ -35,7 +35,7 @@ build() {
   LDFLAGS+=" -static"
   cd $srcdir/mpv
   #git reset --hard 6ec3e1549de5596ec582393345d06aaa13ca80ce
-  sed -i "s/windows,6.0/windows/g" meson.build
+  sed -i "s|win_subsystem: 'windows'|win_subsystem: 'windows,6.0'|g" meson.build
   NO_CONFLTO=1 meson setup build \
     --prefix="${MINGW_PREFIX}" \
     --libdir=${MINGW_PREFIX}/lib \
