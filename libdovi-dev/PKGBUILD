@@ -23,7 +23,6 @@ package() {
   cargo update -p serde --precise 1.0.197
   cargo update -p serde_json --precise 1.0.114
   cargo update -p roxmltree --precise 0.19.0
-  cargo update -p libc --precise 0.2
 
   cargo cinstall --manifest-path=$srcdir/dovi_tool/dolby_vision/Cargo.toml --prefix=${MINGW_PREFIX} --destdir=$pkgdir --target=x86_64-pc-windows-gnu --release --library-type staticlib
 }
