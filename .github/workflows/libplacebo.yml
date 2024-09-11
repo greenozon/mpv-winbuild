@@ -50,7 +50,7 @@ jobs:
       - name: Setup rust toolchain
         run: |
           curl -OL https://github.com/eko5624/toolchain/releases/download/toolchain/rust-for-win7-1.77.2.7z
-          7z x rust-for-win7-1.77.2.7z
+          7z x rust-for-win7-1.77.2.7z -o${{ env.top_dir }}
           rm rust-for-win7-1.77.2.7z
       - name: Build
         run: |
