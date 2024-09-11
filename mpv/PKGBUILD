@@ -28,14 +28,15 @@ makedepends=("libjpeg-dev"
              "vulkan-dev"
              "zlib-dev")
 license=('GPL3')
-source=("git+https://github.com/mpv-player/mpv.git")
-md5sums=('SKIP')
+source=("git+https://github.com/mpv-player/mpv.git"
+        "0001-for-win7.patch")
+md5sums=('SKIP' 'SKIP')
 
 build() {
   LDFLAGS+=" -static"
   cd $srcdir/mpv
   #git reset --hard 6ec3e1549de5596ec582393345d06aaa13ca80ce
-  sed -i "s|win_subsystem: 'windows'|win_subsystem: 'windows,6.0'|g" meson.build
+  patch -p1 -i $srcdir/0001-for-win7.patch
   NO_CONFLTO=1 meson setup build \
     --prefix="${MINGW_PREFIX}" \
     --libdir=${MINGW_PREFIX}/lib \
