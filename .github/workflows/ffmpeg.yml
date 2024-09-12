@@ -26,7 +26,46 @@ on:
   #- cron: '30 0 * * MON'
     
 jobs:
+  libjxl:
+    runs-on: ubuntu-latest
+    env:
+      COMPILER: ${{ inputs.compiler }}
+      BIT: ${{ inputs.build_target }}
+      GH_TOKEN: ${{ secrets.BOT }} 
+    container:
+      image: docker://ghcr.io/eko5624/archlinux:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main      
+      - name: Add builder user
+        run: |
+          useradd builder -m
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          sudo cp pacman-config/makepkg_cross_$COMPILER.conf /etc
+          sudo cp pacman-config/makepkg-cross-$COMPILER /usr/bin
+      - name: Setting top_dir env
+        run: echo "top_dir=$(cd ~ && pwd)" >> $GITHUB_ENV
+      - name: Loading ${{ inputs.compiler }}-${{ inputs.build_target }} cache
+        uses: actions/cache@main
+        with:
+          path: ${{ env.top_dir }}/cross
+          key: ${{ inputs.compiler }}-${{ inputs.build_target }}-ucrt
+      - name: Build
+        run: |
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-$COMPILER-$BIT/brotli-dev-1.1.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-$COMPILER-$BIT/highway-dev-1.2.0-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-$COMPILER-$BIT/lcms2-dev-2.16-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-$COMPILER-$BIT/libjpeg-dev-3.0.3-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-$COMPILER-$BIT/libpng-dev-1.6.43-1-x86_64.pkg.tar.zst
+          curl -OL https://github.com/${{ github.repository }}/releases/download/dev-$COMPILER-$BIT/zlib-dev-2.2.1-1-x86_64.pkg.tar.zst 
+          pacman -U *.zst --noconfirm        
+          sudo chmod 777 -R ${{ env.top_dir }} .
+          cd libjxl-dev; sudo -H -u builder makepkg-cross-$COMPILER -sLf
+      - name: Release    
+        run: ./release-dev.sh libjxl-dev libjxl-dev  
+
   ffmpeg:
+    needs: [libjxl]
     runs-on: ubuntu-latest
     env:
       COMPILER: ${{ inputs.compiler }}

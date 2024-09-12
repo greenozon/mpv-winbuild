@@ -6,7 +6,7 @@ arch=('x86_64')
 url="https://github.com/libjxl/libjxl/"
 makedepends=('brotli-dev' 'highway-dev' 'lcms2-dev' 'libjpeg-dev' 'libpng-dev' 'zlib-dev')
 license=('BSD')
-source=("git+https://github.com/libjxl/libjxl.git#tag=v0.10.2"
+source=("git+https://github.com/libjxl/libjxl.git"
         "git+https://github.com/libjpeg-turbo/libjpeg-turbo.git")
 md5sums=('SKIP' 'SKIP')
 
