@@ -35,7 +35,7 @@ md5sums=('SKIP' 'SKIP')
 build() {
   LDFLAGS+=" -static"
   cd $srcdir/mpv
-  git reset --hard c0f5d2391b32b79551502b85ce90285f55d1645c
+  git reset --hard ab3d0b73f799bfaaa018a3350a246a11c6a52feb
   #patch -p1 -i $srcdir/0001-for-win7.patch
   NO_CONFLTO=1 meson setup build \
     --prefix="${MINGW_PREFIX}" \
